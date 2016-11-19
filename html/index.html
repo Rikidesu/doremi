@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>doremi~</title>
+    <link rel="stylesheet" href="dist/fontAwesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="dist/css/default.css">
+
+</head>
+<body>
+
+<div class="content" >
+
+    <div class="side">
+
+        <audio id="player" src="demo.mp3" autoplay="autoplay" style="display: none"></audio>
+
+        <div class="progress">
+            <i class="fa fa-music"></i>
+        </div>
+
+
+        <!-- 这里做成3D的， 反面可以翻过来，进行下载、评星等操作-->
+        <div class="cover">
+
+            <img width="100%" src="dist/img/cover.png">
+
+            <div class="controller">
+
+                <div class="coverModel">
+
+                </div>
+
+                <div onclick="player.playerDom.paused?player.play():player.pause();" class="play">
+                    <i class="fa fa-play"></i>
+                </div>
+                <div class="time">
+                    <div>1:29</div>
+                    <div>3:27</div>
+                </div>
+                <div class="other">
+                    <i class="fa fa-heart"></i>
+                    <i class="fa fa-random"></i>
+                    <i class="fa fa-forward"></i>
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+            <h1> doremi.moe </h1>
+        </div>
+        <div class="search">
+
+            <form id="search" onsubmit="event.preventDefault();return search.text();">
+                <input name="text" class="searchInput" id="searchInput" placeholder="这里搜索噢～">
+                <label for="searchInput"></label>
+            </form>
+
+            <i class="fa fa-search"></i>
+
+        </div>
+
+        <div id="searchResult" class="body">
+
+        </div>
+
+    </div>
+
+</div>
+<script src="dist/js/jquery.min.js"></script>
+<script src="dist/js/default.js"></script>
+<script>
+
+    "use strict";
+    var search = {
+        form:document.getElementById("search"),
+        result:document.getElementById("searchResult")
+    };
+    search.text = function(){
+        $.ajax({
+            url:"api/search/"+this.form.text.value,
+            type:"GET",
+            dataType:"JSON",
+            success:function(data){
+
+                search.result.innerHTML='';
+                data.result.songs.forEach(function(el,id){
+                    var result = document.createElement("div");
+                    result.className='results';
+                    result.innerHTML= `
+                        <div class="rCover">
+                        <img src=`+el.album.blurPicUrl+`>
+                        </div>
+                        <div class="rDetail">
+                        <p class="title">`+ el.name +`</p>
+                <p>
+                歌手：`+el.artists[0].name+`
+                </p>
+                <p>
+                专辑：`+el.album.name+`
+                </p>
+                </div>
+                <div class="rCtrl">
+                        <i onclick="player.play('`+el.mp3Url+`')" class="fa fa-play-circle-o"></i>
+                        </div>`;
+                    search.result.appendChild(result);
+                    return false
+                });
+
+
+                return false;
+
+
+            }
+        })
+    }
+
+</script>
+
+</body>
+</html>
